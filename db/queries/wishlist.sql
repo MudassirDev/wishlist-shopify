@@ -1,5 +1,5 @@
 -- name: CreateWishlistEntry :one
-INSERT INTO wishtlist_entries (
+INSERT INTO wishlist_entries (
   product_id, customer_id
 ) VALUES (
   ?, ?
@@ -7,4 +7,9 @@ INSERT INTO wishtlist_entries (
 RETURNING *;
 
 -- name: GetWishlistEntries :many
-SELECT * FROM wishtlist_entries WHERE customer_id = ?;
+SELECT * FROM wishlist_entries WHERE customer_id = ?;
+
+-- name: DeleteWishlistEntry :exec
+DELETE FROM wishlist_entries
+WHERE customer_id = ?
+AND product_id = ?;

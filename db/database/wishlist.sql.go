@@ -30,6 +30,22 @@ func (q *Queries) CreateWishlistEntry(ctx context.Context, arg CreateWishlistEnt
 	return i, err
 }
 
+const deleteWishlistEntry = `-- name: DeleteWishlistEntry :exec
+DELETE FROM wishtlist_entries
+WHERE customer_id = ?
+AND product_id = ?
+`
+
+type DeleteWishlistEntryParams struct {
+	CustomerID int64
+	ProductID  int64
+}
+
+func (q *Queries) DeleteWishlistEntry(ctx context.Context, arg DeleteWishlistEntryParams) error {
+	_, err := q.db.ExecContext(ctx, deleteWishlistEntry, arg.CustomerID, arg.ProductID)
+	return err
+}
+
 const getWishlistEntries = `-- name: GetWishlistEntries :many
 SELECT product_id, customer_id FROM wishtlist_entries WHERE customer_id = ?
 `

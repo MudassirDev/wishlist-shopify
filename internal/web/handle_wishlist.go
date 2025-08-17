@@ -49,4 +49,33 @@ func (c *config) handleGetEntry(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, wishlistEntries)
 }
 
-func (c *config) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {}
+func (c *config) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
+	type Request struct {
+		ProductId  int64 `json:"product_id"`
+		CustomerID int64 `json:"customer_id"`
+	}
+
+	var req Request
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	if err := decoder.Decode(&req); err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "failed to decode request", err)
+		return
+	}
+
+	err := c.DB.DeleteWishlistEntry(context.Background(), database.DeleteWishlistEntryParams{
+		CustomerID: req.CustomerID,
+		ProductID:  req.ProductId,
+	})
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "failed to delete entry", err)
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, struct {
+		Msg string `json:"message"`
+	}{
+		Msg: "Deleted successfully",
+	})
+}
