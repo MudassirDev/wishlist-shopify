@@ -25,7 +25,7 @@ func CreateMuxServe(conn *sql.DB) http.Handler {
 
 func configureCors(mux *http.ServeMux) http.Handler {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://theuvpen.myshopify.com/"},
+		AllowedOrigins:   []string{"https://theuvpen.myshopify.com"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
