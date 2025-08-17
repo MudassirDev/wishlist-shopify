@@ -4,7 +4,7 @@
 
 package database
 
-type WishtlistEntry struct {
+type WishlistEntry struct {
 	ProductID  int64
 	CustomerID int64
 }

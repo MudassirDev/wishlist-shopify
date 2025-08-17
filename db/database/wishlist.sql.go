@@ -10,7 +10,7 @@ import (
 )
 
 const createWishlistEntry = `-- name: CreateWishlistEntry :one
-INSERT INTO wishtlist_entries (
+INSERT INTO wishlist_entries (
   product_id, customer_id
 ) VALUES (
   ?, ?
@@ -23,15 +23,15 @@ type CreateWishlistEntryParams struct {
 	CustomerID int64
 }
 
-func (q *Queries) CreateWishlistEntry(ctx context.Context, arg CreateWishlistEntryParams) (WishtlistEntry, error) {
+func (q *Queries) CreateWishlistEntry(ctx context.Context, arg CreateWishlistEntryParams) (WishlistEntry, error) {
 	row := q.db.QueryRowContext(ctx, createWishlistEntry, arg.ProductID, arg.CustomerID)
-	var i WishtlistEntry
+	var i WishlistEntry
 	err := row.Scan(&i.ProductID, &i.CustomerID)
 	return i, err
 }
 
 const deleteWishlistEntry = `-- name: DeleteWishlistEntry :exec
-DELETE FROM wishtlist_entries
+DELETE FROM wishlist_entries
 WHERE customer_id = ?
 AND product_id = ?
 `
@@ -47,18 +47,18 @@ func (q *Queries) DeleteWishlistEntry(ctx context.Context, arg DeleteWishlistEnt
 }
 
 const getWishlistEntries = `-- name: GetWishlistEntries :many
-SELECT product_id, customer_id FROM wishtlist_entries WHERE customer_id = ?
+SELECT product_id, customer_id FROM wishlist_entries WHERE customer_id = ?
 `
 
-func (q *Queries) GetWishlistEntries(ctx context.Context, customerID int64) ([]WishtlistEntry, error) {
+func (q *Queries) GetWishlistEntries(ctx context.Context, customerID int64) ([]WishlistEntry, error) {
 	rows, err := q.db.QueryContext(ctx, getWishlistEntries, customerID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []WishtlistEntry
+	var items []WishlistEntry
 	for rows.Next() {
-		var i WishtlistEntry
+		var i WishlistEntry
 		if err := rows.Scan(&i.ProductID, &i.CustomerID); err != nil {
 			return nil, err
 		}
