@@ -5,3 +5,6 @@ INSERT INTO cart_entries (
   ?, ?
 )
 RETURNING *;
+
+-- name: GetCartEntry :one
+SELECT * FROM cart_entries WHERE customer_id = ?;

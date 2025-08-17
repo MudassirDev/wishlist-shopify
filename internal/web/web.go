@@ -16,7 +16,8 @@ func CreateMuxServe(conn *sql.DB) http.Handler {
 	cfg.DB = database.New(conn)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/createcart", cfg.handleCreateCart)
+	mux.HandleFunc("POST /api/cartentry", cfg.handleCartEntry)
+	mux.HandleFunc("GET /api/cartentry", cfg.handleGetEntry)
 
 	return configureCors(mux)
 }

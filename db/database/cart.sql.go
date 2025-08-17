@@ -29,3 +29,14 @@ func (q *Queries) CreateCartEntry(ctx context.Context, arg CreateCartEntryParams
 	err := row.Scan(&i.Items, &i.CustomerID)
 	return i, err
 }
+
+const getCartEntry = `-- name: GetCartEntry :one
+SELECT items, customer_id FROM cart_entries WHERE customer_id = ?
+`
+
+func (q *Queries) GetCartEntry(ctx context.Context, customerID int64) (CartEntry, error) {
+	row := q.db.QueryRowContext(ctx, getCartEntry, customerID)
+	var i CartEntry
+	err := row.Scan(&i.Items, &i.CustomerID)
+	return i, err
+}

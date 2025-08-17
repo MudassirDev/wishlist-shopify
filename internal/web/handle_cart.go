@@ -3,13 +3,12 @@ package web
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/MudassirDev/shopify-wishlist/db/database"
 )
 
-func (c *config) handleCreateCart(w http.ResponseWriter, r *http.Request) {
+func (c *config) handleCartEntry(w http.ResponseWriter, r *http.Request) {
 	type Request struct {
 		Items      string `json:"items"`
 		CustomerID int    `json:"customer_id"`
@@ -20,8 +19,7 @@ func (c *config) handleCreateCart(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err := decoder.Decode(&req); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("{err: 'failed to decode'}"))
+		RespondWithError(w, http.StatusInternalServerError, "failed to decode request", err)
 		return
 	}
 
@@ -31,18 +29,12 @@ func (c *config) handleCreateCart(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("{err: 'failed to create'}"))
-		fmt.Println(err)
-		return
-	}
-	data, err := json.Marshal(entry)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("{err: 'failed to marshal'}"))
+		RespondWithError(w, http.StatusInternalServerError, "failed to created entry", err)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write(data)
+	RespondWithJSON(w, http.StatusCreated, entry)
+}
+
+func (c *config) handleGetEntry(w http.ResponseWriter, r *http.Request) {
 }
