@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,10 +10,14 @@ import (
 
 	"github.com/MudassirDev/shopify-wishlist/internal/web"
 	"github.com/joho/godotenv"
+	"github.com/pressly/goose/v3"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 var (
 	apiCfg = APIConfig{}
+	//go:embed db/schema/*.sql
+	embedMigrations embed.FS
 )
 
 func init() {
@@ -27,6 +33,21 @@ func init() {
 
 	handler := web.CreateMuxServe(dbURL)
 	apiCfg.handler = handler
+}
+
+func init() {
+
+	conn, err := sql.Open("libsql", apiCfg.dbURL)
+	if err != nil {
+		log.Fatal("DB connection failed")
+	}
+	defer conn.Close()
+
+	goose.SetDialect("turso")
+	goose.SetBaseFS(embedMigrations)
+	if err := goose.Up(conn, "db/schema"); err != nil {
+		log.Fatal("failed to run migrations ", err)
+	}
 }
 
 func main() {
