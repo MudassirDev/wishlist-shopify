@@ -1,12 +1,32 @@
 package web
 
-import "net/http"
+import (
+	"database/sql"
+	"net/http"
+
+	"github.com/MudassirDev/shopify-wishlist/db/database"
+	"github.com/rs/cors"
+)
 
 var (
 	cfg = config{}
 )
 
-func CreateMuxServe(dbURL string) *http.ServeMux {
+func CreateMuxServe(conn *sql.DB) http.Handler {
+	cfg.DB = database.New(conn)
 	mux := http.NewServeMux()
-	return mux
+
+	mux.HandleFunc("POST /api/createcart", cfg.handleCreateCart)
+
+	return configureCors(mux)
+}
+
+func configureCors(mux *http.ServeMux) http.Handler {
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+	return c.Handler(mux)
 }

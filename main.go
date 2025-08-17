@@ -18,6 +18,7 @@ var (
 	apiCfg = APIConfig{}
 	//go:embed db/schema/*.sql
 	embedMigrations embed.FS
+	dbConn          *sql.DB
 )
 
 func init() {
@@ -31,12 +32,16 @@ func init() {
 	validateEnv(dbURL, "DB_URL")
 	apiCfg.dbURL = dbURL
 
-	handler := web.CreateMuxServe(dbURL)
+	conn, err := sql.Open("libsql", dbURL)
+	if err != nil {
+		log.Fatalf("failed to make an connection with database: %v", err)
+	}
+	dbConn = conn
+	handler := web.CreateMuxServe(dbConn)
 	apiCfg.handler = handler
 }
 
 func init() {
-
 	conn, err := sql.Open("libsql", apiCfg.dbURL)
 	if err != nil {
 		log.Fatal("DB connection failed")
@@ -51,6 +56,8 @@ func init() {
 }
 
 func main() {
+	defer dbConn.Close()
+
 	srv := http.Server{
 		Addr:    apiCfg.port,
 		Handler: apiCfg.handler,
