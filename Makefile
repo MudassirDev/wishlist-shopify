@@ -9,3 +9,6 @@ build-run:
 
 dev:
 	air
+
+database:
+	turso db shell wishlist-shopify
