@@ -1,8 +1,8 @@
 -- +goose Up
 CREATE TABLE wishlist_entries (
-  product_id INTEGER NOT NULL,
+  product_handle TEXT NOT NULL,
   customer_id INTEGER NOT NULL,
-  UNIQUE(product_id, customer_id)
+  UNIQUE(product_handle, customer_id)
 );
 
 -- +goose Down

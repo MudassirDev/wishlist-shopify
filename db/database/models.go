@@ -5,6 +5,6 @@
 package database
 
 type WishlistEntry struct {
-	ProductID  int64
-	CustomerID int64
+	ProductHandle string
+	CustomerID    int64
 }

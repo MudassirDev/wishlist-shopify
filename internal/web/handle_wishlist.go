@@ -11,8 +11,8 @@ import (
 
 func (c *config) handleWishlistEntry(w http.ResponseWriter, r *http.Request) {
 	type Request struct {
-		ProductId  int64 `json:"product_id"`
-		CustomerID int64 `json:"customer_id"`
+		ProductHandle string `json:"product_handle"`
+		CustomerID    int64  `json:"customer_id"`
 	}
 
 	var req Request
@@ -25,8 +25,8 @@ func (c *config) handleWishlistEntry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	entry, err := c.DB.CreateWishlistEntry(context.Background(), database.CreateWishlistEntryParams{
-		ProductID:  req.ProductId,
-		CustomerID: req.CustomerID,
+		ProductHandle: req.ProductHandle,
+		CustomerID:    req.CustomerID,
 	})
 
 	if err != nil {
@@ -51,8 +51,8 @@ func (c *config) handleGetEntry(w http.ResponseWriter, r *http.Request) {
 
 func (c *config) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
 	type Request struct {
-		ProductId  int64 `json:"product_id"`
-		CustomerID int64 `json:"customer_id"`
+		ProductHandle string `json:"product_handle"`
+		CustomerID    int64  `json:"customer_id"`
 	}
 
 	var req Request
@@ -65,8 +65,8 @@ func (c *config) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := c.DB.DeleteWishlistEntry(context.Background(), database.DeleteWishlistEntryParams{
-		CustomerID: req.CustomerID,
-		ProductID:  req.ProductId,
+		CustomerID:    req.CustomerID,
+		ProductHandle: req.ProductHandle,
 	})
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "failed to delete entry", err)

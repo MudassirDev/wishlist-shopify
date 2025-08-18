@@ -11,43 +11,43 @@ import (
 
 const createWishlistEntry = `-- name: CreateWishlistEntry :one
 INSERT INTO wishlist_entries (
-  product_id, customer_id
+  product_handle, customer_id
 ) VALUES (
   ?, ?
 )
-RETURNING product_id, customer_id
+RETURNING product_handle, customer_id
 `
 
 type CreateWishlistEntryParams struct {
-	ProductID  int64
-	CustomerID int64
+	ProductHandle string
+	CustomerID    int64
 }
 
 func (q *Queries) CreateWishlistEntry(ctx context.Context, arg CreateWishlistEntryParams) (WishlistEntry, error) {
-	row := q.db.QueryRowContext(ctx, createWishlistEntry, arg.ProductID, arg.CustomerID)
+	row := q.db.QueryRowContext(ctx, createWishlistEntry, arg.ProductHandle, arg.CustomerID)
 	var i WishlistEntry
-	err := row.Scan(&i.ProductID, &i.CustomerID)
+	err := row.Scan(&i.ProductHandle, &i.CustomerID)
 	return i, err
 }
 
 const deleteWishlistEntry = `-- name: DeleteWishlistEntry :exec
 DELETE FROM wishlist_entries
 WHERE customer_id = ?
-AND product_id = ?
+AND product_handle = ?
 `
 
 type DeleteWishlistEntryParams struct {
-	CustomerID int64
-	ProductID  int64
+	CustomerID    int64
+	ProductHandle string
 }
 
 func (q *Queries) DeleteWishlistEntry(ctx context.Context, arg DeleteWishlistEntryParams) error {
-	_, err := q.db.ExecContext(ctx, deleteWishlistEntry, arg.CustomerID, arg.ProductID)
+	_, err := q.db.ExecContext(ctx, deleteWishlistEntry, arg.CustomerID, arg.ProductHandle)
 	return err
 }
 
 const getWishlistEntries = `-- name: GetWishlistEntries :many
-SELECT product_id, customer_id FROM wishlist_entries WHERE customer_id = ?
+SELECT product_handle, customer_id FROM wishlist_entries WHERE customer_id = ?
 `
 
 func (q *Queries) GetWishlistEntries(ctx context.Context, customerID int64) ([]WishlistEntry, error) {
@@ -59,7 +59,7 @@ func (q *Queries) GetWishlistEntries(ctx context.Context, customerID int64) ([]W
 	var items []WishlistEntry
 	for rows.Next() {
 		var i WishlistEntry
-		if err := rows.Scan(&i.ProductID, &i.CustomerID); err != nil {
+		if err := rows.Scan(&i.ProductHandle, &i.CustomerID); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
